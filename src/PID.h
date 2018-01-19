@@ -2,6 +2,7 @@
 #define PID_H
 
 class PID {
+
 public:
   /*
   * Errors
@@ -12,10 +13,16 @@ public:
 
   /*
   * Coefficients
-  */ 
+  */
   double Kp;
   double Ki;
   double Kd;
+  /* store current steer output
+  */
+  double currSteer;
+
+  const double MAX_STEERING=1.0;
+  const double MIN_STEERING=-1.0;
 
   /*
   * Constructor
@@ -41,6 +48,8 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+  double Steering(double factor);
 };
 
 #endif /* PID_H */
