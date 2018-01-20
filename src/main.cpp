@@ -32,13 +32,14 @@ int main(int argc, char *argv[])
 {
   uWS::Hub h;
 
-  double kp=0.0,ki=0.0,kd=0.0;
+  double kp=0.5,ki=0.0001,kd=10.0;
   PID pid;
   //pid.Init(0.5,0,0);  //0.8,0.04, 18.5
   //(0.225,0.0004,4)
   // 0.5 0.0001 5.0 - good
   // TODO: Initialize the pid variable.
-double factor = 0.9;
+double factor = 0.8;
+double targetSpeed = 45;
   if (argc>=4)
   {
         //std::cout<< atof(argv[1])<<std::endl;
@@ -47,10 +48,12 @@ double factor = 0.9;
         kd = atof(argv[3]);
         if (argc>4)
             factor = atof(argv[4]);
+        if (argc>5)
+            targetSpeed = atof(argv[5]);
   }
   pid.Init(kp,ki,kd);
-  std::cout << "Kp="<<kp<<", Ki="<<ki<<", Kd="<<kd<<", factor="<<factor<<std::endl;
-  h.onMessage([&pid, &factor](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  std::cout << "Kp="<<kp<<", Ki="<<ki<<", Kd="<<kd<<", factor="<<factor<<", target speed="<<targetSpeed<<std::endl;
+  h.onMessage([&pid, &factor,&targetSpeed](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -78,14 +81,14 @@ double factor = 0.9;
           steer_value = pid.Steering(factor);
 
           double throttle = 0.3;
-          double targetSpeed = 70;
+
           if (speed>=targetSpeed)
           {
               throttle = -0.05*(speed - targetSpeed);
           }
           else
           {
-              throttle = - 0.0125*(speed-targetSpeed);
+              throttle = - 0.025*(speed-targetSpeed);
           }
 
           // DEBUG
