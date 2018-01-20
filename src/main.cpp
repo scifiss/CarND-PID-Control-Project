@@ -77,6 +77,17 @@ double factor = 0.9;
 
           steer_value = pid.Steering(factor);
 
+          double throttle = 0.3;
+          double targetSpeed = 70;
+          if (speed>=targetSpeed)
+          {
+              throttle = -0.05*(speed - targetSpeed);
+          }
+          else
+          {
+              throttle = - 0.0125*(speed-targetSpeed);
+          }
+
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value
           << " Speed: "<<speed<< " Angle: "<<angle<<std::endl;
@@ -84,7 +95,8 @@ double factor = 0.9;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = 0.3;
+          msgJson["throttle"] = throttle;
+          //msgJson["speed"] = 70;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           //std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
